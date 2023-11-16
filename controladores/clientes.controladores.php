@@ -4,7 +4,6 @@ class ControladorClientes{
 
     public function create($datos){
 
-        echo "<pre>"; print_r($datos); echo "<pre>" ;
 
         if(isset($datos["nombre"]) && !preg_match('/^[a-zA-ZáéíóúÁÉÍÓÚñÑ]+$/', $datos["nombre"])){
 
@@ -24,7 +23,7 @@ class ControladorClientes{
 
             $json = array(
     
-            "detalle" => "Apellido no valido"
+                "detalle" => "Apellido no valido"
     
             );
     
@@ -38,7 +37,7 @@ class ControladorClientes{
 
             $json=array(
 
-                    "detalle"=>"error en el campo email "
+                "detalle"=>"error en el campo email "
 
             );
 
@@ -70,8 +69,44 @@ class ControladorClientes{
 
         }
 
+        $id_cliente = str_replace('$','c',crypt($datos["nombre"].$datos["apellido"].$datos["email"], '$2a$07$afartwetsdAD52356FEDGsfhsd$'));
+
+        $llave_secreta =str_replace('$','c',crypt($datos["email"].$datos["apellido"].$datos["nombre"], '$2a$07$afartwetsdAD52356FEDGsfhsd$'));
 
 
+        $datos = array(
+
+            "nombre" => $datos["nombre"],
+            "apellido" => $datos["apellido"],
+            "email" => $datos["email"],
+            "id_cliente" => $id_cliente,
+            "llave_secreta" => $llave_secreta,
+            "created_at" => date('Y-m-d h:i:s'),
+            "updated_at" => date('Y-m-d h:i:s'),
+
+
+        );
+
+        $create = ModeloCliente :: create("clientes", $datos);
+
+        if( $create == "ok"){
+
+            $json = array(
+
+                "status" => 404,
+                "detalle" => "Sus credenciales se generaron con exito",
+                "id_cliente" => $id_cliente,
+                "llave_secreta" => $llave_secreta
+
+            );
+
+            echo json_encode($json,true);
+
+            return;
+
+        }
+
+        
 
         
 
