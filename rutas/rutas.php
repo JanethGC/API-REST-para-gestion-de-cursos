@@ -25,8 +25,18 @@
 
             if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == "POST" ){
 
+                $datos = array(
+                    "titulo" => $_POST["titulo"],
+                    "descripcion" => $_POST["descripcion"],
+                    "instructor" => $_POST["instructor"],
+                    "imagen" => $_POST["imagen"],
+                    "precio" => $_POST["precio"]
+                   
+
+                );
+
                 $cursos = new ControladorCursos();
-                $cursos -> create();
+                $cursos -> create($datos);
 
 
             }
