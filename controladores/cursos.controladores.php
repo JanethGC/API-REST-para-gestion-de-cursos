@@ -207,7 +207,7 @@ class ControladorCursos{
 
     }
 
-    public function update( $id,$datos){
+    public function update( $id, $datos){
 
         $clientes = ModeloCliente::index("clientes");
 
@@ -297,15 +297,60 @@ class ControladorCursos{
 
     public function delete( $id){
 
-        $json = array(
-    
-            "detalle" => "Curso borrado con exito de id... -> ". $id
-    
-        );
-    
-        echo json_encode($json,true);
+        $clientes = ModeloCliente::index("clientes");
 
-        return;
+        if(isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW']) ){
+
+            foreach ($clientes as $key => $valueCliente) {
+                
+                if(base64_encode($_SERVER['PHP_AUTH_USER'].":".$_SERVER['PHP_AUTH_PW'])== 
+                   base64_encode($valueCliente["id_cliente"].":".$valueCliente["llave_secreta"]) ){
+
+
+                    $curso = ModeloCurso::show("cursos", $id);
+
+                    foreach ($curso as $key => $valueCurso) {
+          
+                        if($valueCurso->id_creador == $valueCliente["id"]){
+          
+                            $delete = ModeloCurso::delete("cursos", $id);
+          
+                            if($delete == "ok"){
+          
+                                $json = array(
+                                            "status"=>200,
+                                            "detalle"=>"Registro exitoso, su curso ha sido eliminado"
+          
+                                        ); 
+                                          
+                                echo json_encode($json, true); 
+          
+                                return;  
+          
+                            }
+          
+                        }else{
+                                
+                            $json = array(
+      
+                                        "status"=>404,
+                                        "detalle"=>"No está autorizado para eliminar este curso"
+                                      
+                                    );
+      
+                            echo json_encode($json, true);
+      
+                            return;
+      
+                        }
+                 
+                    }
+                   
+                }          
+
+            }         
+
+        }
 
     }
 
