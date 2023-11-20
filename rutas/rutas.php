@@ -79,8 +79,6 @@
                 $cursos = new ControladorCursos();
                 $cursos -> show(array_filter($arrayRutas)[4]);
 
-
-
             }
 
             if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == "PUT"){

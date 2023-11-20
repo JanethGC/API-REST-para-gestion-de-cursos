@@ -17,7 +17,6 @@ class ModeloCurso{
         $stmt = null;
 
 
-
     }
 
     static public function create( $tabla, $datos){
@@ -47,6 +46,28 @@ class ModeloCurso{
 		$stmt = null;
 
     }
+
+	static public function show( $tabla, $id ){
+
+        $stmt = Conexion :: conectar() -> prepare( "SELECT * FROM $tabla WHERE id = :id" );
+
+		$stmt -> bindParam(":id",$id, PDO::PARAM_INT);
+
+
+        $stmt -> execute();
+
+        return $stmt -> fetchAll( PDO::FETCH_CLASS);
+
+        $stmt -> close();
+
+        $stmt = null;
+
+
+    }
+
+
+
+
 
 
     
