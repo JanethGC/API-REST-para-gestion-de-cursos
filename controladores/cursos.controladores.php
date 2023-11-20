@@ -187,6 +187,16 @@ class ControladorCursos{
     
                         echo json_encode($json,true);
 
+                    }else{
+
+                        $json = array(
+                            "status" => 200,
+                            "detalle" => "No se encontro ningun curso" ,
+    
+                        );
+    
+                        echo json_encode($json,true);
+
                     }
                     
                 }
@@ -197,18 +207,92 @@ class ControladorCursos{
 
     }
 
-    public function update( $id){
+    public function update( $id,$datos){
 
-        $json = array(
-    
-            "detalle" => "Curso actualizado con exito de id... -> ". $id
-    
-        );
-    
-        echo json_encode($json,true);
+        $clientes = ModeloCliente::index("clientes");
 
-        return;
+        if(isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW']) ){
 
+            foreach ($clientes as $key => $valueCliente) {
+                
+                if(base64_encode($_SERVER['PHP_AUTH_USER'].":".$_SERVER['PHP_AUTH_PW'])== 
+                   base64_encode($valueCliente["id_cliente"].":".$valueCliente["llave_secreta"]) ){
+
+                    foreach ($datos as $key => $valueDatos) {
+
+                        
+                        if(isset($valueDatos) && !preg_match('/^[(\\)\\=\\&\\$\\;\\-\\_\\*\\"\\<\\>\\?\\¿\\!\\¡\\:\\,\\.\\0-9a-zA-ZñÑáéíóúÁÉÍÓÚ ]+$/', $valueDatos )){
+
+                            $json = array(
+
+								"status"=>404,
+								"detalle"=>"Error en el campo ".$key
+
+							);
+
+							echo json_encode($json, true);
+
+							return;
+                
+                        }
+
+                
+
+                    }
+
+                    $curso = ModeloCurso::show("cursos", $id);
+
+                    foreach ($curso as $key => $valueCurso) {
+          
+                        if($valueCurso->id_creador == $valueCliente["id"]){
+          
+                            $datos = array( "id"=>$id,
+                                            "titulo"=>$datos["titulo"],
+                                            "descripcion"=>$datos["descripcion"],
+                                            "instructor"=>$datos["instructor"],
+                                            "imagen"=>$datos["imagen"],
+                                            "precio"=>$datos["precio"],
+                                            "updated_at"=>date('Y-m-d h:i:s'));
+          
+                            $update = ModeloCurso::update("cursos", $datos);
+          
+                            if($update == "ok"){
+          
+                                $json = array(
+                                            "status"=>200,
+                                            "detalle"=>"Registro exitoso, su curso ha sido actualizado"
+          
+                                        ); 
+                                          
+                                echo json_encode($json, true); 
+          
+                                return;  
+          
+                            }
+          
+                        }else{
+                                
+                            $json = array(
+      
+                                        "status"=>404,
+                                        "detalle"=>"No está autorizado para modificar este curso"
+                                      
+                                    );
+      
+                            echo json_encode($json, true);
+      
+                            return;
+      
+                        }
+                 
+                    }
+                   
+                }          
+
+            }         
+
+        }
+        
     }
 
     public function delete( $id){

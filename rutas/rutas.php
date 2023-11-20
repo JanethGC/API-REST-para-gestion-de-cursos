@@ -83,8 +83,13 @@
 
             if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == "PUT"){
 
+                $datos = array();
+
+                parse_str(file_get_contents('php://input'), $datos);
+
+
                 $editarCurso = new ControladorCursos();
-                $editarCurso -> update(array_filter($arrayRutas)[4]);
+                $editarCurso -> update(array_filter($arrayRutas)[4],$datos);
 
             }
 
