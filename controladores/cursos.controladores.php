@@ -4,7 +4,7 @@ class ControladorCursos{
 
     
 
-    public function index(){
+    public function index($pagina){
         
         $clientes = ModeloCliente::index("clientes");
 
@@ -15,7 +15,22 @@ class ControladorCursos{
                 if(base64_encode($_SERVER['PHP_AUTH_USER'].":".$_SERVER['PHP_AUTH_PW'])== 
                    base64_encode($value["id_cliente"].":".$value["llave_secreta"]) ){
 
-                    $cursos = ModeloCurso::index("cursos");
+                    if($pagina != null){
+
+                        $cantidad = 10;
+
+                        $desde = ( $pagina - 1) * $cantidad;
+
+                        $cursos = ModeloCurso::index("cursos","clientes",$cantidad,$desde);
+
+                        
+                    }else{
+
+                        $cursos = ModeloCurso::index("cursos","clientes",null,null);
+
+
+                    }
+
 
 
                     $json = array(
@@ -83,7 +98,7 @@ class ControladorCursos{
 
                     }
 
-                    $cursos = ModeloCurso::index("cursos");
+                    $cursos = ModeloCurso::index("cursos", null, null, null);
 
                     foreach ($cursos as $key => $value) {
 
@@ -176,7 +191,7 @@ class ControladorCursos{
                 if(base64_encode($_SERVER['PHP_AUTH_USER'].":".$_SERVER['PHP_AUTH_PW'])== 
                    base64_encode($value["id_cliente"].":".$value["llave_secreta"]) ){
 
-                    $curso = ModeloCurso::show("cursos",$id);
+                    $curso = ModeloCurso::show("cursos","clientes",$id);
 
                     if(!empty($curso)){
 
